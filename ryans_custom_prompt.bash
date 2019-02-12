@@ -1,5 +1,5 @@
 # **************************************************************
-# Custom command prompt
+# Ryan Hieber's Custom Command Prompt
 # 
 # Sample output:
 # __________________________________________________________________.__________________________
@@ -52,13 +52,16 @@ function git_info {
 			remote_branch="master"
 		fi
 
+        # Ahead/Behind
 		ahead_behind=$(git rev-list --left-right --count $branch...$remote_path$remote_branch | tr -s '\t' '|');
 		ahead=$(cut -d "|" -f1 <<< $ahead_behind);
 		behind=$(cut -d "|" -f2 <<< $ahead_behind);
 
+        # Rebasing
 		rebasing_string="(Rebasing)"
 		test -d "$(git rev-parse --git-path rebase-merge)" || test -d "$(git rev-parse --git-path rebase-apply)" || rebasing_string=""
 
+        # Tracked / untracked changes
 		git_status=$(git status -s)
 		if [ -n "$git_status" ]; then
 			# There are some changes
@@ -77,22 +80,23 @@ function git_info {
 		# If the remote branch text contains or equals the branch text then replace it with "..." to save space.
 		remote_branch_string="${remote_branch/$branch/...}" 
 
+        # Construct the output
 		ahead_behind_part="$DEFAULT_COLOR[$RESET_COLOR$ahead_color$ahead$RESET_COLOR$DEFAULT_COLOR|$behind]$RESET_COLOR"
 		local_part="$DEFAULT_COLOR$branch $rebasing_string$RESET_COLOR$ahead_behind_part"
 		upstream_part="$DEFAULT_COLOR->$remote_string/$remote_branch_string$RESET_COLOR"
 		whole_string=$local_part$upstream_part
 		whole_string_length=$(printf $whole_string | wc -m)
 
-
-
-
 		# echo "" to get a new line
-		echo 
+		echo
+        # Split the output into multiple lines if needed.
 		if [ "$whole_string_length" -le "80" ]; then
-			# The git info fits on one line. -e enables the \033 color escaping.
+			# The git info fits on one line.
+            # -e enables the \033 color escaping.
 			echo -e "$whole_string"
 		else
-			# The git info doesn't fit on a single line. -e enables the \033 color escaping.
+			# The git info doesn't fit on a single line.
+            # -e enables the \033 color escaping.
 			echo -e "$local_part"
 			echo -e "$upstream_part"
 		fi
@@ -105,6 +109,7 @@ function git_info {
 # character terminal which is 76 (git log pads 4 characters to the left). 
 # This assumes my typical git commit command of the form:
 #     $ git ci -m "
+# (Note that I have aliased the "commit" command to "ci"
 function divider {
 	DIVIDER_COLOR="\033[4;36m"
 	# Space for the 'git ci -m "'  part of the message
