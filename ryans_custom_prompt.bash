@@ -62,14 +62,16 @@ function git_info {
 		test -d "$(git rev-parse --git-path rebase-merge)" || test -d "$(git rev-parse --git-path rebase-apply)" || rebasing_string=""
 
         # Tracked / untracked changes
-		git_status=$(git status -s)
-		if [ -n "$git_status" ]; then
+        modified_files="$(git ls-files -m)"
+        untracked_files="$(git status -s -uno)"
+		all_changed_files=$(git status -s)
+		if [ -n "$all_changed_files" ]; then
 			# There are some changes
-			if [ "$(git status -s -uno)" = "$git_status" ]; then
-				# Only added changes exist: Green
-				ahead_color="\033[0;32m"
+			if [ "$untracked_files" = "$all_changed_files" ] && [ -z "$modified_files" ]; then
+                # Only added changes exist: Green
+                ahead_color="\033[0;32m"
 			else
-				# Untracked chnges exist: Red
+                # Untracked or modified files exist: Red
 				ahead_color="\033[0;31m"
 			fi
 		else 
