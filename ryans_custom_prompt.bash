@@ -8,8 +8,15 @@
 # $ git ci -m "Some commit message that easily fits in 50 spaces"
 
 
+# Reset and default colors 
 DEFAULT_COLOR="\033[0;2m"
 RESET_COLOR="\033[m"
+
+# Reset and default colors wrapped in '\[' and '\]' so that bash doesn't treat
+# it as extra white space and screw the cursor placement. Note that this is only
+# needed in places that are not inside a \$() (e.g. inside git_info()) for some reason.
+DEFAULT_COLOR_WR="\[$DEFAULT_COLOR\]"
+RESET_COLOR_WR="\[$RESET_COLOR\]"
 
 # The branch and the associated upstream remote/branch with the number of commits
 # that branch is ahead and behind the upstream branch.
@@ -113,20 +120,23 @@ function git_info {
 #     $ git ci -m "
 # (Note that I have aliased the "commit" command to "ci"
 function divider {
-	DIVIDER_COLOR="\033[4;36m"
+	DIVIDER_COLOR="\[\033[4;36m\]"
 	# Space for the 'git ci -m "'  part of the message
 	prefix="             "
 	commit_space="                                                 .                        "
-	echo -e "$DIVIDER_COLOR$prefix$commit_space$RESET_COLOR"
+	echo -e "$DIVIDER_COLOR$prefix$commit_space$RESET_COLOR_WR"
 }
 
 function prompt {
-	PROMPT_COLOR="\033[1;36m"
-	echo -e "$PROMPT_COLOR$ $RESET_COLOR"
+	PROMPT_COLOR="\[\033[1;36m\]"
+	echo -e "$PROMPT_COLOR$ $RESET_COLOR_WR"
+}
+
+function _git_info {
+	echo -e "$(git_info)"
 }
 
 # Assign the prompt format
-PS1="\$(divider)\n$DEFAULT_COLOR\w$RESET_COLOR\$(git_info)\n\$(prompt)"
-
+PS1="$(divider)\n$DEFAULT_COLOR_WR\w$RESET_COLOR_WR\$(git_info)\n$(prompt)"
 # **************************************************************
 
