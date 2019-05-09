@@ -38,12 +38,12 @@ function git_info {
 		if [ "$remote" == "." ]; then
 			# Branch is tracking another local branch.
 			remote_path="" 
-			remote_branch=$(git config branch.$branch.merge | cut -d / -f 3);
+			remote_branch=$(git config branch.$branch.merge | cut -d / -f 3-);
 			remote_string="local"
 		elif [ "$remote" != "" ]; then
 			# Branch is tracking a remote branch.
 			remote_path="$remote/"
-			remote_branch=$(git config branch.$branch.merge | cut -d / -f 3);
+			remote_branch=$(git config branch.$branch.merge | cut -d / -f 3-);
 			remote_string="$remote"
 		else
 			# No tracking for this branch, so defualt to origin/master
